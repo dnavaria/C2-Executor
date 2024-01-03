@@ -4,20 +4,33 @@
 #   Stop:           docker compose down
 #   Destroy:        docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
 
-name: supabase
 version: "3.8"
 services:
-  services:
   redis:
     image: redis:latest
-    container_name: my-redis-container
+    container_name: redis-container
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - redis_network
-
+  
+  c2-api-server:
+    image: c2-api-server
+    container_name: c2-api-server
+    build: 
+      context: ../server/api-server/
+    volumes:
+      - ./.api.env:/app/.env
+    ports:
+      - "11999:9999"
+    depends_on:
+      - redis
+      - db
+    networks:
+      - redis_network
+      - postgres_network
 
 
   studio:
@@ -391,7 +404,8 @@ services:
       - ./volumes/db/data:/var/lib/postgresql/data:Z
       # Changes required for Analytics support
       - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
-
+    networks:
+      - postgres_network
   vector:
     container_name: supabase-vector
     image: timberio/vector:0.28.1-alpine
@@ -421,3 +435,4 @@ volumes:
 
 networks:
   redis_network:
+  postgres_network:
