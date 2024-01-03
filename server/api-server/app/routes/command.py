@@ -3,10 +3,15 @@ from app.database.db import get_db
 from fastapi.responses import ORJSONResponse
 from fastapi import Depends
 from app.controller import CommandController
+from pydantic import BaseModel
 
 cmd_controller = CommandController()
 
 router = APIRouter()
+
+
+class CommandRequest(BaseModel):
+    command_text: str = None
 
 
 @router.get("/", response_class=ORJSONResponse)
@@ -53,12 +58,11 @@ async def get_all_recent_commands(request: Request, db=Depends(get_db)):
 
 
 @router.post("/run")
-async def create_command(request: Request, db=Depends(get_db)):
+async def create_command(request: CommandRequest, db=Depends(get_db)):
     # This function will create a new command in the database and send it to the Celery worker.
     # Implement database insertion here and call the execute_command function.
     try:
-        body = await request.json()
-        command_text = body.get("command_text")
+        command_text = request.command_text
         if command_text is None:
             return ORJSONResponse(
                 content={
