@@ -58,7 +58,7 @@ async def get_all_recent_commands(request: Request, db=Depends(get_db)):
 
 
 @router.post("/run")
-async def create_command(request: CommandRequest, db=Depends(get_db)):
+async def run_command(request: CommandRequest, db=Depends(get_db)):
     # This function will create a new command in the database and send it to the Celery worker.
     # Implement database insertion here and call the execute_command function.
     try:
