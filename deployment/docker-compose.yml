@@ -406,6 +406,7 @@ services:
       - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
     networks:
       - postgres_network
+      - default
   vector:
     container_name: supabase-vector
     image: timberio/vector:0.28.1-alpine
