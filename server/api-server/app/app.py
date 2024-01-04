@@ -1,5 +1,10 @@
 from fastapi import FastAPI
 from app.routes import command
+from fastapi.middleware.cors import CORSMiddleware
+origins = [
+    "*",
+    "http://localhost:3000",
+]
 
 app = FastAPI(
     title="C2 - API Server",
@@ -15,6 +20,13 @@ app = FastAPI(
 
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health-check")
 def health_check():
